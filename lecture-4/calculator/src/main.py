@@ -1,4 +1,6 @@
 import flet as ft
+import math
+import random
 
 
 class CalcButton(ft.ElevatedButton):
@@ -31,56 +33,58 @@ class ExtraActionButton(CalcButton):
         self.color = ft.Colors.BLACK
 
 
+class SciButton(CalcButton):
+    def __init__(self, text, button_clicked):
+        CalcButton.__init__(self, text, button_clicked)
+        self.bgcolor = ft.Colors.GREEN
+        self.color = ft.Colors.WHITE
+
+
 class CalculatorApp(ft.Container):
     def __init__(self):
         super().__init__()
         self.reset()
+        self.sci_mode = True  # 常に科学モード
 
         self.result = ft.Text(value="0", color=ft.Colors.WHITE, size=20)
-        self.width = 350
+        self.width = 800
         self.bgcolor = ft.Colors.BLACK
         self.border_radius = ft.border_radius.all(20)
         self.padding = 20
+        self.update_layout()
+
+    def update_layout(self):
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.result], alignment="end"),
                 ft.Row(
                     controls=[
-                        ExtraActionButton(text="AC", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="+/-", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="%", button_clicked=self.button_clicked),
-                        ActionButton(text="/", button_clicked=self.button_clicked),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        DigitButton(text="7", button_clicked=self.button_clicked),
-                        DigitButton(text="8", button_clicked=self.button_clicked),
-                        DigitButton(text="9", button_clicked=self.button_clicked),
-                        ActionButton(text="*", button_clicked=self.button_clicked),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        DigitButton(text="4", button_clicked=self.button_clicked),
-                        DigitButton(text="5", button_clicked=self.button_clicked),
-                        DigitButton(text="6", button_clicked=self.button_clicked),
-                        ActionButton(text="-", button_clicked=self.button_clicked),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        DigitButton(text="1", button_clicked=self.button_clicked),
-                        DigitButton(text="2", button_clicked=self.button_clicked),
-                        DigitButton(text="3", button_clicked=self.button_clicked),
-                        ActionButton(text="+", button_clicked=self.button_clicked),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        DigitButton(text="0", expand=2, button_clicked=self.button_clicked),
-                        DigitButton(text=".", button_clicked=self.button_clicked),
-                        ActionButton(text="=", button_clicked=self.button_clicked),
+                        ft.Column(
+                            controls=[
+                                ft.Row(controls=[SciButton(text="sin", button_clicked=self.button_clicked), SciButton(text="cos", button_clicked=self.button_clicked), SciButton(text="tan", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[SciButton(text="log", button_clicked=self.button_clicked), SciButton(text="exp", button_clicked=self.button_clicked), SciButton(text="sqrt", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[SciButton(text="ln", button_clicked=self.button_clicked), SciButton(text="pow", button_clicked=self.button_clicked), SciButton(text="asin", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[SciButton(text="acos", button_clicked=self.button_clicked), SciButton(text="atan", button_clicked=self.button_clicked), SciButton(text="pi", button_clicked=self.button_clicked)]),
+                            ]
+                        ),
+                        ft.Column(
+                            controls=[
+                                ft.Row(controls=[ExtraActionButton(text="AC", button_clicked=self.button_clicked), ExtraActionButton(text="+/-", button_clicked=self.button_clicked), ExtraActionButton(text="%", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[DigitButton(text="7", button_clicked=self.button_clicked), DigitButton(text="8", button_clicked=self.button_clicked), DigitButton(text="9", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[DigitButton(text="4", button_clicked=self.button_clicked), DigitButton(text="5", button_clicked=self.button_clicked), DigitButton(text="6", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[DigitButton(text="1", button_clicked=self.button_clicked), DigitButton(text="2", button_clicked=self.button_clicked), DigitButton(text="3", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[ExtraActionButton(text="rand", button_clicked=self.button_clicked), DigitButton(text="0", button_clicked=self.button_clicked), DigitButton(text=".", button_clicked=self.button_clicked)]),
+                            ]
+                        ),
+                        ft.Column(
+                            controls=[
+                                ft.Row(controls=[ActionButton(text="/", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[ActionButton(text="*", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[ActionButton(text="-", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[ActionButton(text="+", button_clicked=self.button_clicked)]),
+                                ft.Row(controls=[ActionButton(text="=", button_clicked=self.button_clicked)]),
+                            ]
+                        ),
                     ]
                 ),
             ]
@@ -123,6 +127,95 @@ class CalculatorApp(ft.Container):
 
             elif float(self.result.value) < 0:
                 self.result.value = str(self.format_number(abs(float(self.result.value))))
+
+        elif data == "sin":
+            try:
+                self.result.value = self.format_number(math.sin(math.radians(float(self.result.value))))
+            except:
+                self.result.value = "Error"
+
+        elif data == "cos":
+            try:
+                self.result.value = self.format_number(math.cos(math.radians(float(self.result.value))))
+            except:
+                self.result.value = "Error"
+
+        elif data == "tan":
+            try:
+                self.result.value = self.format_number(math.tan(math.radians(float(self.result.value))))
+            except:
+                self.result.value = "Error"
+
+        elif data == "log":
+            try:
+                if float(self.result.value) > 0:
+                    self.result.value = self.format_number(math.log10(float(self.result.value)))
+                else:
+                    self.result.value = "Error"
+            except:
+                self.result.value = "Error"
+
+        elif data == "exp":
+            try:
+                self.result.value = self.format_number(math.exp(float(self.result.value)))
+            except:
+                self.result.value = "Error"
+
+        elif data == "sqrt":
+            try:
+                if float(self.result.value) >= 0:
+                    self.result.value = self.format_number(math.sqrt(float(self.result.value)))
+                else:
+                    self.result.value = "Error"
+            except:
+                self.result.value = "Error"
+
+        elif data == "pi":
+            self.result.value = str(math.pi)
+
+        elif data == "ln":
+            try:
+                if float(self.result.value) > 0:
+                    self.result.value = self.format_number(math.log(float(self.result.value)))
+                else:
+                    self.result.value = "Error"
+            except:
+                self.result.value = "Error"
+
+        elif data == "pow":
+            try:
+                self.result.value = self.format_number(float(self.result.value) ** 2)
+            except:
+                self.result.value = "Error"
+
+        elif data == "asin":
+            try:
+                val = float(self.result.value)
+                if -1 <= val <= 1:
+                    self.result.value = self.format_number(math.degrees(math.asin(val)))
+                else:
+                    self.result.value = "Error"
+            except:
+                self.result.value = "Error"
+
+        elif data == "acos":
+            try:
+                val = float(self.result.value)
+                if -1 <= val <= 1:
+                    self.result.value = self.format_number(math.degrees(math.acos(val)))
+                else:
+                    self.result.value = "Error"
+            except:
+                self.result.value = "Error"
+
+        elif data == "atan":
+            try:
+                self.result.value = self.format_number(math.degrees(math.atan(float(self.result.value))))
+            except:
+                self.result.value = "Error"
+
+        elif data == "rand":
+            self.result.value = self.format_number(random.random())
 
         self.update()
 
